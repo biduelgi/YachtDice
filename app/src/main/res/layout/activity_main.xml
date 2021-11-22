@@ -26,10 +26,35 @@
 
 
         <ImageView
-            android:id="@+id/test"
-            android:layout_width="100dp"
-            android:layout_height="100dp"
-            android:src="@mipmap/ic_launcher" />
+            android:id="@+id/one"
+            android:layout_width="50dp"
+            android:layout_height="50dp"
+            android:src="@drawable/one" />
+        <ImageView
+            android:id="@+id/two"
+            android:layout_width="50dp"
+            android:layout_height="50dp"
+            android:src="@drawable/two" />
+        <ImageView
+            android:id="@+id/three"
+            android:layout_width="50dp"
+            android:layout_height="50dp"
+            android:src="@drawable/three" />
+        <ImageView
+            android:id="@+id/four"
+            android:layout_width="50dp"
+            android:layout_height="50dp"
+            android:src="@drawable/four" />
+        <ImageView
+            android:id="@+id/five"
+            android:layout_width="50dp"
+            android:layout_height="50dp"
+            android:src="@drawable/five" />
+        <ImageView
+            android:id="@+id/six"
+            android:layout_width="50dp"
+            android:layout_height="50dp"
+            android:src="@drawable/six" />
     </LinearLayout>
     <ListView
         android:id="@+id/list"

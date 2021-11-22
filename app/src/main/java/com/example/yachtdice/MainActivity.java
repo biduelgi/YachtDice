@@ -20,7 +20,7 @@ public class MainActivity extends AppCompatActivity {
     private Button btn_move;
     private EditText et_test;
     private String str;
-    private ImageView test;
+    private ImageView one;
     private ListView list;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -39,8 +39,8 @@ public class MainActivity extends AppCompatActivity {
             }
         });
 
-        test = findViewById(R.id.test);
-        test.setOnClickListener(new View.OnClickListener() {
+        one = findViewById(R.id.one);
+        one.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 Toast.makeText(getApplicationContext(),"주사위를 굴렸습니다", Toast.LENGTH_SHORT).show();
