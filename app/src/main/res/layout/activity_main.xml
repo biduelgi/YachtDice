@@ -18,6 +18,11 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:text="전송"/>
+    <Button
+        android:id="@+id/btn_roll"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="굴리기"/>
 
     <LinearLayout
         android:layout_width="match_parent"
@@ -50,11 +55,7 @@
             android:layout_width="50dp"
             android:layout_height="50dp"
             android:src="@drawable/five" />
-        <ImageView
-            android:id="@+id/six"
-            android:layout_width="50dp"
-            android:layout_height="50dp"
-            android:src="@drawable/six" />
+
     </LinearLayout>
     <ListView
         android:id="@+id/list"

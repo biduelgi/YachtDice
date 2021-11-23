@@ -14,14 +14,19 @@ import android.widget.Toast;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Random;
 
 public class MainActivity extends AppCompatActivity {
 
     private Button btn_move;
+    private Button btn_roll;
     private EditText et_test;
     private String str;
-    private ImageView one;
+    private ImageView one, two, three, four, five, six;
     private ListView list;
+    private final int[] image_id = {R.drawable.one, R.drawable.two, R.drawable.three, R.drawable.four,
+                            R.drawable.five, R.drawable.six};
+    Random random = new Random();
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -38,8 +43,31 @@ public class MainActivity extends AppCompatActivity {
                 startActivity(intent);
             }
         });
-
         one = findViewById(R.id.one);
+        two = findViewById(R.id.two);
+        three = findViewById(R.id.three);
+        four = findViewById(R.id.four);
+        five = findViewById(R.id.five);
+
+        btn_roll = findViewById(R.id.btn_roll);
+        btn_roll.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                int rand_num = random.nextInt(6);
+                one.setImageResource(image_id[rand_num]);
+                rand_num = random.nextInt(6);
+                two.setImageResource(image_id[rand_num]);
+                rand_num = random.nextInt(6);
+                three.setImageResource(image_id[rand_num]);
+                rand_num = random.nextInt(6);
+                four.setImageResource(image_id[rand_num]);
+                rand_num = random.nextInt(6);
+                five.setImageResource(image_id[rand_num]);
+
+            }
+        });
+
+
         one.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
