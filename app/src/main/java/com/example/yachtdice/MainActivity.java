@@ -18,12 +18,12 @@ import java.util.Random;
 
 public class MainActivity extends AppCompatActivity {
 
-    private Button btn_move;
+
     private Button btn_roll;
-    private EditText et_test;
-    private String str;
-    private ImageView one, two, three, four, five, six;
-    private ListView list;
+
+
+    private ImageView one, two, three, four, five;
+
     private final int[] image_id = {R.drawable.one, R.drawable.two, R.drawable.three, R.drawable.four,
                             R.drawable.five, R.drawable.six};
     Random random = new Random();
@@ -31,18 +31,7 @@ public class MainActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
-        et_test = findViewById(R.id.et_test);
 
-        btn_move = findViewById(R.id.btn_move);
-        btn_move.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                str = et_test.getText().toString();
-                Intent intent = new Intent(MainActivity.this, SubActivity.class);
-                intent.putExtra("str", str );
-                startActivity(intent);
-            }
-        });
         one = findViewById(R.id.one);
         two = findViewById(R.id.two);
         three = findViewById(R.id.three);
@@ -75,17 +64,6 @@ public class MainActivity extends AppCompatActivity {
             }
         });
 
-        list = findViewById(R.id.list);
-        List<String> data = new ArrayList<>();
 
-        ArrayAdapter<String> adapter = new ArrayAdapter<>(this, android.R.layout.simple_list_item_1,data);
-        list.setAdapter(adapter);
-        data.add("1");
-        data.add("2");
-        data.add("3");
-        data.add("4");
-        data.add("5");
-        data.add("6");
-        adapter.notifyDataSetChanged();
     }
 }
