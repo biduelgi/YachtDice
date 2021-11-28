@@ -9,9 +9,7 @@
         android:roundIcon="@mipmap/ic_yacht_round"
         android:supportsRtl="true"
         android:theme="@style/Theme.YachtDice">
-        <activity
-            android:name=".SubActivity"
-            android:exported="false" />
+
         <activity
             android:name=".MainActivity"
             android:exported="true">
