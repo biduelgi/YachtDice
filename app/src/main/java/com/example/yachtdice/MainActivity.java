@@ -25,15 +25,17 @@ public class MainActivity extends AppCompatActivity {
     private Button btn_roll, btn_score1, btn_score2, btn_score3, btn_score4, btn_score5, btn_score6, btn_score_three,
             btn_score_four, btn_score_full, btn_score_small, btn_score_large, btn_score_yacht;
     private ImageView one, two, three, four, five;
-    private int score = 0;
+    private int total_score = 0;        //총점수
+    private int round = 0;      //라운드 수
+    private int chance = 0;     //주사위 던질 기회
     private final int[] image_id = {R.drawable.one, R.drawable.two, R.drawable.three, R.drawable.four,
                             R.drawable.five, R.drawable.six};
     private TextView bonus, total;
+    private ArrayList<Integer> score = new ArrayList<>(Arrays.asList(0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0));  //획득할 수 있는 점수
     private ArrayList<Integer> dice_num = new ArrayList<>(Arrays.asList(0, 0, 0, 0, 0));
-    private ArrayList<Button> button = new ArrayList<>(Arrays.asList(btn_roll,btn_score1, btn_score2, btn_score3, btn_score4, btn_score5, btn_score6, btn_score_three,
-            btn_score_four, btn_score_full, btn_score_small, btn_score_large, btn_score_yacht));
+    private ArrayList<Button> button = new ArrayList<>();
     private ArrayList<Boolean> dice = new ArrayList<Boolean>(Arrays.asList(false, false, false, false, false));
-
+    private ArrayList<Boolean> score_exist = new ArrayList<Boolean>(Arrays.asList(false, false, false, false, false, false, false, false, false, false, false, false));
     Random random = new Random();
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -61,6 +63,20 @@ public class MainActivity extends AppCompatActivity {
         btn_score_large = findViewById(R.id.btn_score_large);
         btn_score_small = findViewById(R.id.btn_score_small);
         btn_score_yacht = findViewById(R.id.btn_score_yacht);
+        button.add(btn_score1);
+        button.add(btn_score2);
+        button.add(btn_score3);
+        button.add(btn_score4);
+        button.add(btn_score5);
+        button.add(btn_score6);
+        button.add(btn_score_three);
+        button.add(btn_score_four);
+        button.add(btn_score_full);
+        button.add(btn_score_large);
+        button.add(btn_score_small);
+        button.add(btn_score_yacht);
+
+
 
 
 
@@ -68,6 +84,9 @@ public class MainActivity extends AppCompatActivity {
         btn_roll.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
+                for(int i=0;i<6; i++) score.set(i, 0);
+
+                chance++;
                 Toast.makeText(getApplicationContext(),"주사위를 굴렸습니다", Toast.LENGTH_SHORT).show();
                 int rand_num;
                 //btn_roll.setEnabled(false);
@@ -96,13 +115,40 @@ public class MainActivity extends AppCompatActivity {
                     dice_num.set(4, rand_num+1);
                     five.setImageResource(image_id[rand_num]);
                 }
-                score = 0;
+
                 for(Integer number : dice_num){
-                    if(number==1) score++;
+                    switch(number){
+                        case 1:
+                            score.set(0, score.get(0)+1);
+                            break;
+                        case 2:
+                            score.set(1, score.get(1)+1);
+                            break;
+                        case 3:
+                            score.set(2, score.get(2)+1);
+                            break;
+                        case 4:
+                            score.set(3, score.get(3)+1);
+                            break;
+                        case 5:
+                            score.set(4, score.get(4)+1);
+                            break;
+                        default:
+                            score.set(5, score.get(5)+1);
+                    }
+                        }
+                for(int i =0; i<6; i++){
+                    if(!score_exist.get(i)){
+                        if(score.get(i)>0){
+                            button.get(i).setText(Integer.toString(score.get(i)));
+                            button.get(i).setEnabled(true);
+                        }
+                    }
                 }
-                if(score>0){
-                    btn_score1.setText(Integer.toString(score));
-                    btn_score1.setEnabled(true);
+
+                if(chance == 3) {
+                    btn_roll.setEnabled(false);
+                    chance = 0;
                 }
 
             }
@@ -178,8 +224,131 @@ public class MainActivity extends AppCompatActivity {
         btn_score1.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                btn_score1.setEnabled(false);
-                total.setText(btn_score1.getText());
+
+                for(Button btn : button){
+                    btn.setEnabled(false);
+                }
+                chance = 0;
+                round++;
+                btn_roll.setEnabled(true);
+
+                total_score += Integer.parseInt(btn_score1.getText().toString());
+                score_exist.set(0, true);
+                total.setText(Integer.toString(total_score));
+                for(int i =0; i<6; i++) {
+                    if (!score_exist.get(i)) button.get(i).setText("0");
+                }
+                if(round==7){
+                    //종료, 다시하기
+                }
+            }
+        });
+
+        btn_score2.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+
+                for(Button btn : button){
+                    btn.setEnabled(false);
+                }
+                chance = 0;
+                round++;
+
+
+                total_score += Integer.parseInt(btn_score2.getText().toString());
+                score_exist.set(1, true);
+                total.setText(Integer.toString(total_score));
+                for(int i =0; i<6; i++) {
+                    if (!score_exist.get(i)) button.get(i).setText("0");
+                }
+                if(round==7){
+                    //종료, 다시하기
+                }
+                btn_roll.setEnabled(true);
+            }
+        });
+        btn_score3.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                for(Button btn : button){
+                    btn.setEnabled(false);
+                }
+                chance = 0;
+                round++;
+
+                total_score += Integer.parseInt(btn_score3.getText().toString());
+                score_exist.set(2, true);
+                total.setText(Integer.toString(total_score));
+                for(int i =0; i<6; i++) {
+                    if (!score_exist.get(i)) button.get(i).setText("0");
+                }
+                if(round==7){
+                    //종료, 다시하기
+                }
+                btn_roll.setEnabled(true);
+            }
+        });
+        btn_score4.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                for(Button btn : button){
+                    btn.setEnabled(false);
+                }
+                chance = 0;
+                round++;
+
+                total_score += Integer.parseInt(btn_score4.getText().toString());
+                score_exist.set(3, true);
+                total.setText(Integer.toString(total_score));
+                for(int i =0; i<6; i++) {
+                    if (!score_exist.get(i)) button.get(i).setText("0");
+                }
+                if(round==7){
+                    //종료, 다시하기
+                }
+                btn_roll.setEnabled(true);
+            }
+        });
+        btn_score5.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                for(Button btn : button){
+                    btn.setEnabled(false);
+                }
+                chance = 0;
+                round++;
+
+                total_score += Integer.parseInt(btn_score5.getText().toString());
+                score_exist.set(4, true);
+                total.setText(Integer.toString(total_score));
+                for(int i =0; i<6; i++) {
+                    if (!score_exist.get(i)) button.get(i).setText("0");
+                }
+                if(round==7){
+                    //종료, 다시하기
+                }
+                btn_roll.setEnabled(true);
+            }
+        });
+        btn_score6.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                for(Button btn : button){
+                    btn.setEnabled(false);
+                }
+                chance = 0;
+                round++;
+
+                total_score += Integer.parseInt(btn_score6.getText().toString());
+                score_exist.set(5, true);
+                total.setText(Integer.toString(total_score));
+                for(int i =0; i<6; i++) {
+                    if (!score_exist.get(i)) button.get(i).setText("0");
+                }
+                if(round==7){
+                    //종료, 다시하기
+                }
+                btn_roll.setEnabled(true);
             }
         });
 
