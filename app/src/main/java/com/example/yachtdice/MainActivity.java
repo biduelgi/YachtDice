@@ -45,6 +45,87 @@ public class MainActivity extends AppCompatActivity {
     private ArrayList<Boolean> dice = new ArrayList<Boolean>(Arrays.asList(false, false, false, false, false));
     private ArrayList<Boolean> score_exist = new ArrayList<Boolean>(Arrays.asList(false, false, false, false, false, false, false, false, false, false, false, false));
     Random random = new Random();
+    private void reset(){
+        if(round==11){  //종료, 다시하기
+            AlertDialog.Builder ad = new AlertDialog.Builder(MainActivity.this);
+            ad.setCancelable(false);
+            ad.setIcon(R.mipmap.ic_yacht_foreground);
+            ad.setTitle("게임 종료!");
+            final EditText result = new EditText(MainActivity.this);
+            result.setText("총 점수: " + total.getText());
+            ad.setView(result);
+            ad.setPositiveButton("다시하기", new DialogInterface.OnClickListener() {
+                @Override
+                public void onClick(DialogInterface dialog, int which) {
+                    score = new ArrayList<>(Arrays.asList(0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0));  //획득할 수 있는 점수
+                    dice_num = new ArrayList<>(Arrays.asList(0, 0, 0, 0, 0));
+                    dice = new ArrayList<Boolean>(Arrays.asList(false, false, false, false, false));
+                    score_exist = new ArrayList<Boolean>(Arrays.asList(false, false, false, false, false, false, false, false, false, false, false, false));
+                    image_click = false;    //던지기 전에 클릭 방지
+                    bonus_yacht = false;    //보너스 야추 획득 여부
+                    bonus_minor_exist = false;
+                    minor_score = 0;        //마이너 보너스 조건
+                    bonus_score = 0;        //보너스 점수
+                    total_score = 0;        //총점수
+                    round = 1;      //라운드 수
+                    chance = 0;
+                    for(Button btn:button){
+                        btn.setText("0");
+                    }
+                    bonus.setText("0");
+                    total.setText("0");
+                    minor_bonus.setText("0/63");
+                    yacht_bonus.setText("미획득");
+                    round_num.setText("1");
+                    dialog.dismiss();
+                }
+            });
+            ad.setNegativeButton("종료", new DialogInterface.OnClickListener() {
+                @Override
+                public void onClick(DialogInterface dialog, int which) {
+                    finish();
+                }
+            });
+            ad.show();
+
+        }
+        else{
+            round_num.setText(Integer.toString(round));
+        }
+    }
+    private void update_minor_bonus(int index){
+        minor_score += Integer.parseInt(button.get(index).getText().toString());
+        if(!bonus_minor_exist){
+            if(minor_score>=63){
+                minor_bonus.setText("63/63");
+                bonus_score += 30;
+                total_score += 30;
+                bonus.setText(Integer.toString(bonus_score));
+                bonus_minor_exist = true;
+            }
+            else{
+                minor_bonus.setText(Integer.toString(minor_score) + "/63");
+            }
+        }
+    }
+    private void nextRound(int index){
+        for(Button btn : button){
+            btn.setEnabled(false);
+        }
+        btn_roll.setEnabled(true);
+        for(ImageView image0: image) image0.setBackgroundResource(R.drawable.dice_no_background);
+        for(int i=0; i<5; i++) dice.set(i, false);
+        chance = 0;
+        round++;
+        image_click = false;
+
+        total_score += Integer.parseInt(button.get(index).getText().toString());
+        score_exist.set(index, true);
+        total.setText(Integer.toString(total_score));
+        for(int i =0; i<12; i++) {
+            if (!score_exist.get(i)) button.get(i).setText("0");
+        }
+    }
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -347,84 +428,9 @@ public class MainActivity extends AppCompatActivity {
             @Override
             public void onClick(View v) {
                 bonus_yacht = false;
-                for(Button btn : button){
-                    btn.setEnabled(false);
-                }
-                for(ImageView image0: image) image0.setBackgroundResource(R.drawable.dice_no_background);
-                for(int i=0; i<5; i++) dice.set(i, false);
-
-                chance = 0;
-                round++;
-
-                image_click = false;
-                btn_roll.setEnabled(true);
-
-                total_score += Integer.parseInt(btn_score1.getText().toString());
-                minor_score += Integer.parseInt(btn_score1.getText().toString());
-                if(!bonus_minor_exist){
-                    if(minor_score>=63){
-                        minor_bonus.setText("63/63");
-                        bonus_score += 30;
-                        total_score += 30;
-                        bonus.setText(Integer.toString(bonus_score));
-                        bonus_minor_exist = true;
-                    }
-                    else{
-                        minor_bonus.setText(Integer.toString(minor_score) + "/63");
-                    }
-                }
-
-                score_exist.set(0, true);
-                total.setText(Integer.toString(total_score));
-                for(int i =0; i<12; i++) {
-                    if (!score_exist.get(i)) button.get(i).setText("0");
-                }
-                if(round==11){  //종료, 다시하기
-                    AlertDialog.Builder ad = new AlertDialog.Builder(MainActivity.this);
-                    ad.setCancelable(false);
-                    ad.setIcon(R.mipmap.ic_yacht_foreground);
-                    ad.setTitle("게임 종료!");
-                    final EditText result = new EditText(MainActivity.this);
-                    result.setText("총 점수: " + total.getText());
-                    ad.setView(result);
-                    ad.setPositiveButton("다시하기", new DialogInterface.OnClickListener() {
-                        @Override
-                        public void onClick(DialogInterface dialog, int which) {
-                            score = new ArrayList<>(Arrays.asList(0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0));  //획득할 수 있는 점수
-                            dice_num = new ArrayList<>(Arrays.asList(0, 0, 0, 0, 0));
-                            dice = new ArrayList<Boolean>(Arrays.asList(false, false, false, false, false));
-                            score_exist = new ArrayList<Boolean>(Arrays.asList(false, false, false, false, false, false, false, false, false, false, false, false));
-                            image_click = false;    //던지기 전에 클릭 방지
-                            bonus_yacht = false;    //보너스 야추 획득 여부
-                            bonus_minor_exist = false;
-                            minor_score = 0;        //마이너 보너스 조건
-                            bonus_score = 0;        //보너스 점수
-                            total_score = 0;        //총점수
-                            round = 1;      //라운드 수
-                            chance = 0;
-                            for(Button btn:button){
-                                btn.setText("0");
-                            }
-                            bonus.setText("0");
-                            total.setText("0");
-                            minor_bonus.setText("0/63");
-                            yacht_bonus.setText("미획득");
-                            round_num.setText("1");
-                            dialog.dismiss();
-                        }
-                    });
-                    ad.setNegativeButton("종료", new DialogInterface.OnClickListener() {
-                        @Override
-                        public void onClick(DialogInterface dialog, int which) {
-                            finish();
-                        }
-                    });
-                    ad.show();
-
-                }
-                else{
-                    round_num.setText(Integer.toString(round));
-                }
+                update_minor_bonus(0);
+                nextRound(0);
+                reset();
             }
         });
 
@@ -432,816 +438,93 @@ public class MainActivity extends AppCompatActivity {
             @Override
             public void onClick(View v) {
                 bonus_yacht = false;
-
-                for(Button btn : button){
-                    btn.setEnabled(false);
-                }
-                for(ImageView image0: image) image0.setBackgroundResource(R.drawable.dice_no_background);
-                for(int i=0; i<5; i++) dice.set(i, false);
-                chance = 0;
-                round++;
-
-                image_click = false;
-
-
-                total_score += Integer.parseInt(btn_score2.getText().toString());
-                minor_score += Integer.parseInt(btn_score2.getText().toString());
-                if(!bonus_minor_exist){
-                    if(minor_score>=63){
-                        minor_bonus.setText("63/63");
-                        bonus_score += 30;
-                        total_score += 30;
-                        bonus.setText(Integer.toString(bonus_score));
-                        bonus_minor_exist = true;
-                    }
-                    else{
-                        minor_bonus.setText(Integer.toString(minor_score) + "/63");
-                    }
-                }
-                score_exist.set(1, true);
-                total.setText(Integer.toString(total_score));
-                for(int i =0; i<12; i++) {
-                    if (!score_exist.get(i)) button.get(i).setText("0");
-                }
-                if(round==11){  //종료, 다시하기
-                    AlertDialog.Builder ad = new AlertDialog.Builder(MainActivity.this);
-                    ad.setCancelable(false);
-                    ad.setIcon(R.mipmap.ic_yacht_foreground);
-                    ad.setTitle("게임 종료!");
-                    final EditText result = new EditText(MainActivity.this);
-                    result.setText("총 점수: " + total.getText());
-                    ad.setView(result);
-                    ad.setPositiveButton("다시하기", new DialogInterface.OnClickListener() {
-                        @Override
-                        public void onClick(DialogInterface dialog, int which) {
-                            score = new ArrayList<>(Arrays.asList(0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0));  //획득할 수 있는 점수
-                            dice_num = new ArrayList<>(Arrays.asList(0, 0, 0, 0, 0));
-                            dice = new ArrayList<Boolean>(Arrays.asList(false, false, false, false, false));
-                            score_exist = new ArrayList<Boolean>(Arrays.asList(false, false, false, false, false, false, false, false, false, false, false, false));
-                            image_click = false;    //던지기 전에 클릭 방지
-                            bonus_yacht = false;    //보너스 야추 획득 여부
-                            bonus_minor_exist = false;
-                            minor_score = 0;        //마이너 보너스 조건
-                            bonus_score = 0;        //보너스 점수
-                            total_score = 0;        //총점수
-                            round = 1;      //라운드 수
-                            chance = 0;
-                            for(Button btn:button){
-                                btn.setText("0");
-                            }
-                            bonus.setText("0");
-                            total.setText("0");
-                            minor_bonus.setText("0/63");
-                            yacht_bonus.setText("미획득");
-                            round_num.setText("1");
-                            dialog.dismiss();
-                        }
-                    });
-                    ad.setNegativeButton("종료", new DialogInterface.OnClickListener() {
-                        @Override
-                        public void onClick(DialogInterface dialog, int which) {
-                            finish();
-                        }
-                    });
-                    ad.show();
-
-                }
-                else{
-                    round_num.setText(Integer.toString(round));
-                }
-                btn_roll.setEnabled(true);
+                update_minor_bonus(1);
+                nextRound(1);
+                reset();
             }
         });
         btn_score3.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 bonus_yacht = false;
-                for(Button btn : button){
-                    btn.setEnabled(false);
-                }
-                for(ImageView image0: image) image0.setBackgroundResource(R.drawable.dice_no_background);
-                for(int i=0; i<5; i++) dice.set(i, false);
-                chance = 0;
-                round++;
-                image_click = false;
-
-                total_score += Integer.parseInt(btn_score3.getText().toString());
-                minor_score += Integer.parseInt(btn_score3.getText().toString());
-                if(!bonus_minor_exist){
-                    if(minor_score>=63){
-                        minor_bonus.setText("63/63");
-                        bonus_score += 30;
-                        total_score += 30;
-                        bonus.setText(Integer.toString(bonus_score));
-                        bonus_minor_exist = true;
-                    }
-                    else{
-                        minor_bonus.setText(Integer.toString(minor_score) + "/63");
-                    }
-                }
-                score_exist.set(2, true);
-                total.setText(Integer.toString(total_score));
-                for(int i =0; i<12; i++) {
-                    if (!score_exist.get(i)) button.get(i).setText("0");
-                }
-                if(round==11){  //종료, 다시하기
-                    AlertDialog.Builder ad = new AlertDialog.Builder(MainActivity.this);
-                    ad.setCancelable(false);
-                    ad.setIcon(R.mipmap.ic_yacht_foreground);
-                    ad.setTitle("게임 종료!");
-                    final EditText result = new EditText(MainActivity.this);
-                    result.setText("총 점수: " + total.getText());
-                    ad.setView(result);
-                    ad.setPositiveButton("다시하기", new DialogInterface.OnClickListener() {
-                        @Override
-                        public void onClick(DialogInterface dialog, int which) {
-                            score = new ArrayList<>(Arrays.asList(0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0));  //획득할 수 있는 점수
-                            dice_num = new ArrayList<>(Arrays.asList(0, 0, 0, 0, 0));
-                            dice = new ArrayList<Boolean>(Arrays.asList(false, false, false, false, false));
-                            score_exist = new ArrayList<Boolean>(Arrays.asList(false, false, false, false, false, false, false, false, false, false, false, false));
-                            image_click = false;    //던지기 전에 클릭 방지
-                            bonus_yacht = false;    //보너스 야추 획득 여부
-                            bonus_minor_exist = false;
-                            minor_score = 0;        //마이너 보너스 조건
-                            bonus_score = 0;        //보너스 점수
-                            total_score = 0;        //총점수
-                            round = 1;      //라운드 수
-                            chance = 0;
-                            for(Button btn:button){
-                                btn.setText("0");
-                            }
-                            bonus.setText("0");
-                            total.setText("0");
-                            minor_bonus.setText("0/63");
-                            yacht_bonus.setText("미획득");
-                            round_num.setText("1");
-                            dialog.dismiss();
-                        }
-                    });
-                    ad.setNegativeButton("종료", new DialogInterface.OnClickListener() {
-                        @Override
-                        public void onClick(DialogInterface dialog, int which) {
-                            finish();
-                        }
-                    });
-                    ad.show();
-
-                }
-                else{
-                    round_num.setText(Integer.toString(round));
-                }
-                btn_roll.setEnabled(true);
+                update_minor_bonus(2);
+                nextRound(2);
+                reset();
             }
         });
         btn_score4.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 bonus_yacht = false;
-                for(Button btn : button){
-                    btn.setEnabled(false);
-                }
-                for(ImageView image0: image) image0.setBackgroundResource(R.drawable.dice_no_background);
-                for(int i=0; i<5; i++) dice.set(i, false);
-                chance = 0;
-                round++;
-                image_click = false;
-
-                total_score += Integer.parseInt(btn_score4.getText().toString());
-                minor_score += Integer.parseInt(btn_score4.getText().toString());
-                if(!bonus_minor_exist){
-                    if(minor_score>=63){
-                        minor_bonus.setText("63/63");
-                        bonus_score += 30;
-                        total_score += 30;
-                        bonus.setText(Integer.toString(bonus_score));
-                        bonus_minor_exist = true;
-                    }
-                    else{
-                        minor_bonus.setText(Integer.toString(minor_score) + "/63");
-                    }
-                }
-                score_exist.set(3, true);
-                total.setText(Integer.toString(total_score));
-                for(int i =0; i<12; i++) {
-                    if (!score_exist.get(i)) button.get(i).setText("0");
-                }
-                if(round==11){  //종료, 다시하기
-                    AlertDialog.Builder ad = new AlertDialog.Builder(MainActivity.this);
-                    ad.setCancelable(false);
-                    ad.setIcon(R.mipmap.ic_yacht_foreground);
-                    ad.setTitle("게임 종료!");
-                    final EditText result = new EditText(MainActivity.this);
-                    result.setText("총 점수: " + total.getText());
-                    ad.setView(result);
-                    ad.setPositiveButton("다시하기", new DialogInterface.OnClickListener() {
-                        @Override
-                        public void onClick(DialogInterface dialog, int which) {
-                            score = new ArrayList<>(Arrays.asList(0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0));  //획득할 수 있는 점수
-                            dice_num = new ArrayList<>(Arrays.asList(0, 0, 0, 0, 0));
-                            dice = new ArrayList<Boolean>(Arrays.asList(false, false, false, false, false));
-                            score_exist = new ArrayList<Boolean>(Arrays.asList(false, false, false, false, false, false, false, false, false, false, false, false));
-                            image_click = false;    //던지기 전에 클릭 방지
-                            bonus_yacht = false;    //보너스 야추 획득 여부
-                            bonus_minor_exist = false;
-                            minor_score = 0;        //마이너 보너스 조건
-                            bonus_score = 0;        //보너스 점수
-                            total_score = 0;        //총점수
-                            round = 1;      //라운드 수
-                            chance = 0;
-                            for(Button btn:button){
-                                btn.setText("0");
-                            }
-                            bonus.setText("0");
-                            total.setText("0");
-                            minor_bonus.setText("0/63");
-                            yacht_bonus.setText("미획득");
-                            round_num.setText("1");
-                            dialog.dismiss();
-                        }
-                    });
-                    ad.setNegativeButton("종료", new DialogInterface.OnClickListener() {
-                        @Override
-                        public void onClick(DialogInterface dialog, int which) {
-                            finish();
-                        }
-                    });
-                    ad.show();
-
-                }
-                else{
-                    round_num.setText(Integer.toString(round));
-                }
-                btn_roll.setEnabled(true);
+                update_minor_bonus(3);
+                nextRound(3);
+                reset();
             }
         });
         btn_score5.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 bonus_yacht = false;
-                for(Button btn : button){
-                    btn.setEnabled(false);
-                }
-                for(ImageView image0: image) image0.setBackgroundResource(R.drawable.dice_no_background);
-                for(int i=0; i<5; i++) dice.set(i, false);
-                chance = 0;
-                round++;
-                image_click = false;
-                total_score += Integer.parseInt(btn_score5.getText().toString());
-                minor_score += Integer.parseInt(btn_score5.getText().toString());
-                if(!bonus_minor_exist){
-                    if(minor_score>=63){
-                        minor_bonus.setText("63/63");
-                        bonus_score += 30;
-                        total_score += 30;
-                        bonus.setText(Integer.toString(bonus_score));
-                        bonus_minor_exist = true;
-                    }
-                    else{
-                        minor_bonus.setText(Integer.toString(minor_score) + "/63");
-                    }
-                }
-                score_exist.set(4, true);
-                total.setText(Integer.toString(total_score));
-                for(int i =0; i<12; i++) {
-                    if (!score_exist.get(i)) button.get(i).setText("0");
-                }
-                if(round==11){  //종료, 다시하기
-                    AlertDialog.Builder ad = new AlertDialog.Builder(MainActivity.this);
-                    ad.setCancelable(false);
-                    ad.setIcon(R.mipmap.ic_yacht_foreground);
-                    ad.setTitle("게임 종료!");
-                    final EditText result = new EditText(MainActivity.this);
-                    result.setText("총 점수: " + total.getText());
-                    ad.setView(result);
-                    ad.setPositiveButton("다시하기", new DialogInterface.OnClickListener() {
-                        @Override
-                        public void onClick(DialogInterface dialog, int which) {
-                            score = new ArrayList<>(Arrays.asList(0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0));  //획득할 수 있는 점수
-                            dice_num = new ArrayList<>(Arrays.asList(0, 0, 0, 0, 0));
-                            dice = new ArrayList<Boolean>(Arrays.asList(false, false, false, false, false));
-                            score_exist = new ArrayList<Boolean>(Arrays.asList(false, false, false, false, false, false, false, false, false, false, false, false));
-                            image_click = false;    //던지기 전에 클릭 방지
-                            bonus_yacht = false;    //보너스 야추 획득 여부
-                            bonus_minor_exist = false;
-                            minor_score = 0;        //마이너 보너스 조건
-                            bonus_score = 0;        //보너스 점수
-                            total_score = 0;        //총점수
-                            round = 1;      //라운드 수
-                            chance = 0;
-                            for(Button btn:button){
-                                btn.setText("0");
-                            }
-                            bonus.setText("0");
-                            total.setText("0");
-                            minor_bonus.setText("0/63");
-                            yacht_bonus.setText("미획득");
-                            round_num.setText("1");
-                            dialog.dismiss();
-                        }
-                    });
-                    ad.setNegativeButton("종료", new DialogInterface.OnClickListener() {
-                        @Override
-                        public void onClick(DialogInterface dialog, int which) {
-                            finish();
-                        }
-                    });
-                    ad.show();
-
-                }
-                else{
-                    round_num.setText(Integer.toString(round));
-                }
-                btn_roll.setEnabled(true);
+                update_minor_bonus(4);
+                nextRound(4);
+                reset();
             }
         });
         btn_score6.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 bonus_yacht = false;
-                for(Button btn : button){
-                    btn.setEnabled(false);
-                }
-                for(ImageView image0: image) image0.setBackgroundResource(R.drawable.dice_no_background);
-                for(int i=0; i<5; i++) dice.set(i, false);
-                image_click = false;
-                chance = 0;
-                round++;
-                total_score += Integer.parseInt(btn_score6.getText().toString());
-                minor_score += Integer.parseInt(btn_score6.getText().toString());
-                if(!bonus_minor_exist){
-                    if(minor_score>=63){
-                        minor_bonus.setText("63/63");
-                        bonus_score += 30;
-                        total_score += 30;
-                        bonus.setText(Integer.toString(bonus_score));
-                        bonus_minor_exist = true;
-                    }
-                    else{
-                        minor_bonus.setText(Integer.toString(minor_score) + "/63");
-                    }
-                }
-                score_exist.set(5, true);
-                total.setText(Integer.toString(total_score));
-                for(int i =0; i<12; i++) {
-                    if (!score_exist.get(i)) button.get(i).setText("0");
-                }
-                if(round==11){  //종료, 다시하기
-                    AlertDialog.Builder ad = new AlertDialog.Builder(MainActivity.this);
-                    ad.setCancelable(false);
-                    ad.setIcon(R.mipmap.ic_yacht_foreground);
-                    ad.setTitle("게임 종료!");
-                    final EditText result = new EditText(MainActivity.this);
-                    result.setText("총 점수: " + total.getText());
-                    ad.setView(result);
-                    ad.setPositiveButton("다시하기", new DialogInterface.OnClickListener() {
-                        @Override
-                        public void onClick(DialogInterface dialog, int which) {
-                            score = new ArrayList<>(Arrays.asList(0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0));  //획득할 수 있는 점수
-                            dice_num = new ArrayList<>(Arrays.asList(0, 0, 0, 0, 0));
-                            dice = new ArrayList<Boolean>(Arrays.asList(false, false, false, false, false));
-                            score_exist = new ArrayList<Boolean>(Arrays.asList(false, false, false, false, false, false, false, false, false, false, false, false));
-                            image_click = false;    //던지기 전에 클릭 방지
-                            bonus_yacht = false;    //보너스 야추 획득 여부
-                            bonus_minor_exist = false;
-                            minor_score = 0;        //마이너 보너스 조건
-                            bonus_score = 0;        //보너스 점수
-                            total_score = 0;        //총점수
-                            round = 1;      //라운드 수
-                            chance = 0;
-                            for(Button btn:button){
-                                btn.setText("0");
-                            }
-                            bonus.setText("0");
-                            total.setText("0");
-                            minor_bonus.setText("0/63");
-                            yacht_bonus.setText("미획득");
-                            round_num.setText("1");
-                            dialog.dismiss();
-                        }
-                    });
-                    ad.setNegativeButton("종료", new DialogInterface.OnClickListener() {
-                        @Override
-                        public void onClick(DialogInterface dialog, int which) {
-                            finish();
-                        }
-                    });
-                    ad.show();
-
-                }
-                else{
-                    round_num.setText(Integer.toString(round));
-                }
-                btn_roll.setEnabled(true);
+                update_minor_bonus(5);
+                nextRound(5);
+                reset();
             }
         });
         btn_score_three.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 bonus_yacht = false;
-                for(Button btn : button){
-                    btn.setEnabled(false);
-                }
-                for(ImageView image0: image) image0.setBackgroundResource(R.drawable.dice_no_background);
-                for(int i=0; i<5; i++) dice.set(i, false);
-                chance = 0;
-                round++;
-                image_click = false;
-
-                total_score += Integer.parseInt(btn_score_three.getText().toString());
-                score_exist.set(6, true);
-                total.setText(Integer.toString(total_score));
-                for(int i =0; i<12; i++) {
-                    if (!score_exist.get(i)) button.get(i).setText("0");
-                }
-                if(round==11){  //종료, 다시하기
-                    AlertDialog.Builder ad = new AlertDialog.Builder(MainActivity.this);
-                    ad.setCancelable(false);
-                    ad.setIcon(R.mipmap.ic_yacht_foreground);
-                    ad.setTitle("게임 종료!");
-                    final EditText result = new EditText(MainActivity.this);
-                    result.setText("총 점수: " + total.getText());
-                    ad.setView(result);
-                    ad.setPositiveButton("다시하기", new DialogInterface.OnClickListener() {
-                        @Override
-                        public void onClick(DialogInterface dialog, int which) {
-                            score = new ArrayList<>(Arrays.asList(0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0));  //획득할 수 있는 점수
-                            dice_num = new ArrayList<>(Arrays.asList(0, 0, 0, 0, 0));
-                            dice = new ArrayList<Boolean>(Arrays.asList(false, false, false, false, false));
-                            score_exist = new ArrayList<Boolean>(Arrays.asList(false, false, false, false, false, false, false, false, false, false, false, false));
-                            image_click = false;    //던지기 전에 클릭 방지
-                            bonus_yacht = false;    //보너스 야추 획득 여부
-                            bonus_minor_exist = false;
-                            minor_score = 0;        //마이너 보너스 조건
-                            bonus_score = 0;        //보너스 점수
-                            total_score = 0;        //총점수
-                            round = 1;      //라운드 수
-                            chance = 0;
-                            for(Button btn:button){
-                                btn.setText("0");
-                            }
-                            bonus.setText("0");
-                            total.setText("0");
-                            minor_bonus.setText("0/63");
-                            yacht_bonus.setText("미획득");
-                            round_num.setText("1");
-                            dialog.dismiss();
-                        }
-                    });
-                    ad.setNegativeButton("종료", new DialogInterface.OnClickListener() {
-                        @Override
-                        public void onClick(DialogInterface dialog, int which) {
-                            finish();
-                        }
-                    });
-                    ad.show();
-
-                }
-                else{
-                    round_num.setText(Integer.toString(round));
-                }
-                btn_roll.setEnabled(true);
+                nextRound(6);
+                reset();
             }
         });
         btn_score_four.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 bonus_yacht = false;
-                for(Button btn : button){
-                    btn.setEnabled(false);
-                }
-                for(ImageView image0: image) image0.setBackgroundResource(R.drawable.dice_no_background);
-                for(int i=0; i<5; i++) dice.set(i, false);
-                chance = 0;
-                round++;
-                image_click = false;
-
-                total_score += Integer.parseInt(btn_score_four.getText().toString());
-                score_exist.set(7, true);
-                total.setText(Integer.toString(total_score));
-                for(int i =0; i<12; i++) {
-                    if (!score_exist.get(i)) button.get(i).setText("0");
-                }
-                if(round==11){  //종료, 다시하기
-                    AlertDialog.Builder ad = new AlertDialog.Builder(MainActivity.this);
-                    ad.setCancelable(false);
-                    ad.setIcon(R.mipmap.ic_yacht_foreground);
-                    ad.setTitle("게임 종료!");
-                    final EditText result = new EditText(MainActivity.this);
-                    result.setText("총 점수: " + total.getText());
-                    ad.setView(result);
-                    ad.setPositiveButton("다시하기", new DialogInterface.OnClickListener() {
-                        @Override
-                        public void onClick(DialogInterface dialog, int which) {
-                            score = new ArrayList<>(Arrays.asList(0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0));  //획득할 수 있는 점수
-                            dice_num = new ArrayList<>(Arrays.asList(0, 0, 0, 0, 0));
-                            dice = new ArrayList<Boolean>(Arrays.asList(false, false, false, false, false));
-                            score_exist = new ArrayList<Boolean>(Arrays.asList(false, false, false, false, false, false, false, false, false, false, false, false));
-                            image_click = false;    //던지기 전에 클릭 방지
-                            bonus_yacht = false;    //보너스 야추 획득 여부
-                            bonus_minor_exist = false;
-                            minor_score = 0;        //마이너 보너스 조건
-                            bonus_score = 0;        //보너스 점수
-                            total_score = 0;        //총점수
-                            round = 1;      //라운드 수
-                            chance = 0;
-                            for(Button btn:button){
-                                btn.setText("0");
-                            }
-                            bonus.setText("0");
-                            total.setText("0");
-                            minor_bonus.setText("0/63");
-                            yacht_bonus.setText("미획득");
-                            round_num.setText("1");
-                            dialog.dismiss();
-                        }
-                    });
-                    ad.setNegativeButton("종료", new DialogInterface.OnClickListener() {
-                        @Override
-                        public void onClick(DialogInterface dialog, int which) {
-                            finish();
-                        }
-                    });
-                    ad.show();
-
-                }
-                else{
-                    round_num.setText(Integer.toString(round));
-                }
-                btn_roll.setEnabled(true);
+                nextRound(7);
+                reset();
             }
         });
         btn_score_full.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 bonus_yacht = false;
-                for(Button btn : button){
-                    btn.setEnabled(false);
-                }
-                for(ImageView image0: image) image0.setBackgroundResource(R.drawable.dice_no_background);
-                for(int i=0; i<5; i++) dice.set(i, false);
-                chance = 0;
-                round++;
-                image_click = false;
-
-                total_score += Integer.parseInt(btn_score_full.getText().toString());
-                score_exist.set(8, true);
-                total.setText(Integer.toString(total_score));
-                for(int i =0; i<12; i++) {
-                    if (!score_exist.get(i)) button.get(i).setText("0");
-                }
-                if(round==11){  //종료, 다시하기
-                    AlertDialog.Builder ad = new AlertDialog.Builder(MainActivity.this);
-                    ad.setCancelable(false);
-                    ad.setIcon(R.mipmap.ic_yacht_foreground);
-                    ad.setTitle("게임 종료!");
-                    final EditText result = new EditText(MainActivity.this);
-                    result.setText("총 점수: " + total.getText());
-                    ad.setView(result);
-                    ad.setPositiveButton("다시하기", new DialogInterface.OnClickListener() {
-                        @Override
-                        public void onClick(DialogInterface dialog, int which) {
-                            score = new ArrayList<>(Arrays.asList(0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0));  //획득할 수 있는 점수
-                            dice_num = new ArrayList<>(Arrays.asList(0, 0, 0, 0, 0));
-                            dice = new ArrayList<Boolean>(Arrays.asList(false, false, false, false, false));
-                            score_exist = new ArrayList<Boolean>(Arrays.asList(false, false, false, false, false, false, false, false, false, false, false, false));
-                            image_click = false;    //던지기 전에 클릭 방지
-                            bonus_yacht = false;    //보너스 야추 획득 여부
-                            bonus_minor_exist = false;
-                            minor_score = 0;        //마이너 보너스 조건
-                            bonus_score = 0;        //보너스 점수
-                            total_score = 0;        //총점수
-                            round = 1;      //라운드 수
-                            chance = 0;
-                            for(Button btn:button){
-                                btn.setText("0");
-                            }
-                            bonus.setText("0");
-                            total.setText("0");
-                            minor_bonus.setText("0/63");
-                            yacht_bonus.setText("미획득");
-                            round_num.setText("1");
-                            dialog.dismiss();
-                        }
-                    });
-                    ad.setNegativeButton("종료", new DialogInterface.OnClickListener() {
-                        @Override
-                        public void onClick(DialogInterface dialog, int which) {
-                            finish();
-                        }
-                    });
-                    ad.show();
-
-                }
-                else{
-                    round_num.setText(Integer.toString(round));
-                }
-                btn_roll.setEnabled(true);
+                nextRound(8);
+                reset();
             }
         });
         btn_score_small.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-
-                for(Button btn : button){
-                    btn.setEnabled(false);
-                }
-                for(ImageView image0: image) image0.setBackgroundResource(R.drawable.dice_no_background);
-                for(int i=0; i<5; i++) dice.set(i, false);
-                chance = 0;
-                round++;
-                image_click = false;
-
-                total_score += 30;
-                score_exist.set(9, true);
-                total.setText(Integer.toString(total_score));
-                for(int i =0; i<12; i++) {
-                    if (!score_exist.get(i)) button.get(i).setText("0");
-                }
-                if(round==11){  //종료, 다시하기
-                    AlertDialog.Builder ad = new AlertDialog.Builder(MainActivity.this);
-                    ad.setCancelable(false);
-                    ad.setIcon(R.mipmap.ic_yacht_foreground);
-                    ad.setTitle("게임 종료!");
-                    final EditText result = new EditText(MainActivity.this);
-                    result.setText("총 점수: " + total.getText());
-                    ad.setView(result);
-                    ad.setPositiveButton("다시하기", new DialogInterface.OnClickListener() {
-                        @Override
-                        public void onClick(DialogInterface dialog, int which) {
-                            score = new ArrayList<>(Arrays.asList(0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0));  //획득할 수 있는 점수
-                            dice_num = new ArrayList<>(Arrays.asList(0, 0, 0, 0, 0));
-                            dice = new ArrayList<Boolean>(Arrays.asList(false, false, false, false, false));
-                            score_exist = new ArrayList<Boolean>(Arrays.asList(false, false, false, false, false, false, false, false, false, false, false, false));
-                            image_click = false;    //던지기 전에 클릭 방지
-                            bonus_yacht = false;    //보너스 야추 획득 여부
-                            bonus_minor_exist = false;
-                            minor_score = 0;        //마이너 보너스 조건
-                            bonus_score = 0;        //보너스 점수
-                            total_score = 0;        //총점수
-                            round = 1;      //라운드 수
-                            chance = 0;
-                            for(Button btn:button){
-                                btn.setText("0");
-                            }
-                            bonus.setText("0");
-                            total.setText("0");
-                            minor_bonus.setText("0/63");
-                            yacht_bonus.setText("미획득");
-                            round_num.setText("1");
-                            dialog.dismiss();
-                        }
-                    });
-                    ad.setNegativeButton("종료", new DialogInterface.OnClickListener() {
-                        @Override
-                        public void onClick(DialogInterface dialog, int which) {
-                            finish();
-                        }
-                    });
-                    ad.show();
-
-                }
-                else{
-                    round_num.setText(Integer.toString(round));
-                }
-                btn_roll.setEnabled(true);
+                bonus_yacht = false;
+                nextRound(9);
+                reset();
             }
         });
         btn_score_large.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-
-
-                for(Button btn : button){
-                    btn.setEnabled(false);
-                }
-                for(ImageView image0: image) image0.setBackgroundResource(R.drawable.dice_no_background);
-                for(int i=0; i<5; i++) dice.set(i, false);
-                chance = 0;
-                round++;
-                image_click = false;
-
-                total_score += 40;
-                score_exist.set(10, true);
-                total.setText(Integer.toString(total_score));
-                for(int i =0; i<12; i++) {
-                    if (!score_exist.get(i)) button.get(i).setText("0");
-                }
-                if(round==11){  //종료, 다시하기
-                    AlertDialog.Builder ad = new AlertDialog.Builder(MainActivity.this);
-                    ad.setCancelable(false);
-                    ad.setIcon(R.mipmap.ic_yacht_foreground);
-                    ad.setTitle("게임 종료!");
-                    final EditText result = new EditText(MainActivity.this);
-                    result.setText("총 점수: " + total.getText());
-                    ad.setView(result);
-                    ad.setPositiveButton("다시하기", new DialogInterface.OnClickListener() {
-                        @Override
-                        public void onClick(DialogInterface dialog, int which) {
-                            score = new ArrayList<>(Arrays.asList(0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0));  //획득할 수 있는 점수
-                            dice_num = new ArrayList<>(Arrays.asList(0, 0, 0, 0, 0));
-                            dice = new ArrayList<Boolean>(Arrays.asList(false, false, false, false, false));
-                            score_exist = new ArrayList<Boolean>(Arrays.asList(false, false, false, false, false, false, false, false, false, false, false, false));
-                            image_click = false;    //던지기 전에 클릭 방지
-                            bonus_yacht = false;    //보너스 야추 획득 여부
-                            bonus_minor_exist = false;
-                            minor_score = 0;        //마이너 보너스 조건
-                            bonus_score = 0;        //보너스 점수
-                            total_score = 0;        //총점수
-                            round = 1;      //라운드 수
-                            chance = 0;
-                            for(Button btn:button){
-                                btn.setText("0");
-                            }
-                            bonus.setText("0");
-                            total.setText("0");
-                            minor_bonus.setText("0/63");
-                            yacht_bonus.setText("미획득");
-                            round_num.setText("1");
-                            dialog.dismiss();
-                        }
-                    });
-                    ad.setNegativeButton("종료", new DialogInterface.OnClickListener() {
-                        @Override
-                        public void onClick(DialogInterface dialog, int which) {
-                            finish();
-                        }
-                    });
-                    ad.show();
-
-                }
-                else{
-                    round_num.setText(Integer.toString(round));
-                }
-                btn_roll.setEnabled(true);
+                bonus_yacht = false;
+                nextRound(10);
+                reset();
             }
         });
         btn_score_yacht.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-
                 bonus_yacht = true;
-                for(Button btn : button){
-                    btn.setEnabled(false);
-                }
-                for(ImageView image0: image) image0.setBackgroundResource(R.drawable.dice_no_background);
-                for(int i=0; i<5; i++) dice.set(i, false);
-                chance = 0;
-                round++;
-                image_click = false;
-
-                total_score += Integer.parseInt(btn_score_yacht.getText().toString());
-                score_exist.set(11, true);
-                total.setText(Integer.toString(total_score));
-                for(int i =0; i<12; i++) {
-                    if (!score_exist.get(i)) button.get(i).setText("0");
-                }
-                if(round==11){  //종료, 다시하기
-                    AlertDialog.Builder ad = new AlertDialog.Builder(MainActivity.this);
-                    ad.setCancelable(false);
-                    ad.setIcon(R.mipmap.ic_yacht_foreground);
-                    ad.setTitle("게임 종료!");
-                    final EditText result = new EditText(MainActivity.this);
-                    result.setText("총 점수: " + total.getText());
-                    ad.setView(result);
-                    ad.setPositiveButton("다시하기", new DialogInterface.OnClickListener() {
-                        @Override
-                        public void onClick(DialogInterface dialog, int which) {
-                            score = new ArrayList<>(Arrays.asList(0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0));  //획득할 수 있는 점수
-                            dice_num = new ArrayList<>(Arrays.asList(0, 0, 0, 0, 0));
-                            dice = new ArrayList<Boolean>(Arrays.asList(false, false, false, false, false));
-                            score_exist = new ArrayList<Boolean>(Arrays.asList(false, false, false, false, false, false, false, false, false, false, false, false));
-                            image_click = false;    //던지기 전에 클릭 방지
-                            bonus_yacht = false;    //보너스 야추 획득 여부
-                            bonus_minor_exist = false;
-                            minor_score = 0;        //마이너 보너스 조건
-                            bonus_score = 0;        //보너스 점수
-                            total_score = 0;        //총점수
-                            round = 1;      //라운드 수
-                            chance = 0;
-                            for(Button btn:button){
-                                btn.setText("0");
-                            }
-                            bonus.setText("0");
-                            total.setText("0");
-                            minor_bonus.setText("0/63");
-                            yacht_bonus.setText("미획득");
-                            round_num.setText("1");
-                            dialog.dismiss();
-                        }
-                    });
-                    ad.setNegativeButton("종료", new DialogInterface.OnClickListener() {
-                        @Override
-                        public void onClick(DialogInterface dialog, int which) {
-                            finish();
-                        }
-                    });
-                    ad.show();
-
-                }
-                else{
-                    round_num.setText(Integer.toString(round));
-                }
-                btn_roll.setEnabled(true);
+                nextRound(11);
+                reset();
             }
         });
         btn_pass.setOnClickListener(new View.OnClickListener() {
@@ -1251,66 +534,17 @@ public class MainActivity extends AppCompatActivity {
                 for(Button btn : button){
                     btn.setEnabled(false);
                 }
+                btn_roll.setEnabled(true);
                 for(ImageView image0: image) image0.setBackgroundResource(R.drawable.dice_no_background);
                 for(int i=0; i<5; i++) dice.set(i, false);
                 image_click = false;
                 chance = 0;
                 round++;
-
                 for(int i =0; i<12; i++) {
                     if (!score_exist.get(i)) button.get(i).setText("0");
                 }
-                if(round==11){  //종료, 다시하기
-                    AlertDialog.Builder ad = new AlertDialog.Builder(MainActivity.this);
-                    ad.setCancelable(false);
-                    ad.setIcon(R.mipmap.ic_yacht_foreground);
-                    ad.setTitle("게임 종료!");
-                    final EditText result = new EditText(MainActivity.this);
-                    result.setText("총 점수: " + total.getText());
-                    ad.setView(result);
-                    ad.setPositiveButton("다시하기", new DialogInterface.OnClickListener() {
-                        @Override
-                        public void onClick(DialogInterface dialog, int which) {
-                            score = new ArrayList<>(Arrays.asList(0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0));  //획득할 수 있는 점수
-                            dice_num = new ArrayList<>(Arrays.asList(0, 0, 0, 0, 0));
-                            dice = new ArrayList<Boolean>(Arrays.asList(false, false, false, false, false));
-                            score_exist = new ArrayList<Boolean>(Arrays.asList(false, false, false, false, false, false, false, false, false, false, false, false));
-                            image_click = false;    //던지기 전에 클릭 방지
-                            bonus_yacht = false;    //보너스 야추 획득 여부
-                            bonus_minor_exist = false;
-                            minor_score = 0;        //마이너 보너스 조건
-                            bonus_score = 0;        //보너스 점수
-                            total_score = 0;        //총점수
-                            round = 1;      //라운드 수
-                            chance = 0;
-                            for(Button btn:button){
-                                btn.setText("0");
-                            }
-                            bonus.setText("0");
-                            total.setText("0");
-                            minor_bonus.setText("0/63");
-                            yacht_bonus.setText("미획득");
-                            round_num.setText("1");
-                            dialog.dismiss();
-                        }
-                    });
-                    ad.setNegativeButton("종료", new DialogInterface.OnClickListener() {
-                        @Override
-                        public void onClick(DialogInterface dialog, int which) {
-                            finish();
-                        }
-                    });
-                    ad.show();
-
-                }
-                else{
-                    round_num.setText(Integer.toString(round));
-                }
-                btn_roll.setEnabled(true);
+                reset();
             }
         });
-
-
-
     }
 }
