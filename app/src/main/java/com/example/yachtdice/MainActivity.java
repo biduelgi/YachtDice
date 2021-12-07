@@ -31,7 +31,7 @@ public class MainActivity extends AppCompatActivity {
     private int bonus_score = 0;        //보너스 점수
     private int total_score = 0;        //총점수
     private int round = 1;      //라운드 수
-    private int chance = 0;     //주사위 던질 기회
+    private int chance = 3;     //주사위 던질 기회
     private Boolean image_click = false;    //던지기 전에 클릭 방지
     private Boolean bonus_yacht = false;    //보너스 야추 획득 여부
     private Boolean bonus_minor_exist = false;      //보너스 마이너 획득 여부
@@ -68,7 +68,8 @@ public class MainActivity extends AppCompatActivity {
                     bonus_score = 0;        //보너스 점수
                     total_score = 0;        //총점수
                     round = 1;      //라운드 수
-                    chance = 0;
+                    chance = 3;
+                    btn_roll.setText("굴리기(3)");
                     for(Button btn:button){
                         btn.setText("0");
                     }
@@ -115,7 +116,8 @@ public class MainActivity extends AppCompatActivity {
         btn_roll.setEnabled(true);
         for(ImageView image0: image) image0.setBackgroundResource(R.drawable.dice_no_background);
         for(int i=0; i<5; i++) dice.set(i, false);
-        chance = 0;
+        chance = 3;
+        btn_roll.setText("굴리기(3)");
         round++;
         image_click = false;
 
@@ -192,7 +194,8 @@ public class MainActivity extends AppCompatActivity {
                 }
 
                 image_click = true;     //주사위 킾 활성화
-                chance++;
+                chance--;
+                btn_roll.setText("굴리기(" + Integer.toString(chance)+")");
                 int rand_num;
                 //btn_roll.setEnabled(false);
                 if(!dice.get(0)){
@@ -335,9 +338,9 @@ public class MainActivity extends AppCompatActivity {
 
 
 
-                if(chance == 3) {
+                if(chance == 0) {
                     btn_roll.setEnabled(false);
-                    chance = 0;
+                    chance = 3;
                 }
 
             }
@@ -538,7 +541,8 @@ public class MainActivity extends AppCompatActivity {
                 for(ImageView image0: image) image0.setBackgroundResource(R.drawable.dice_no_background);
                 for(int i=0; i<5; i++) dice.set(i, false);
                 image_click = false;
-                chance = 0;
+                chance = 3;
+                btn_roll.setText("굴리기(3)");
                 round++;
                 for(int i =0; i<12; i++) {
                     if (!score_exist.get(i)) button.get(i).setText("0");
